@@ -254,7 +254,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 	@ReactMethod
 	public void test(final Callback callback) {
-		String woohoo = 'This is a test';
+		String woohoo = "This is a test";
 		callback.invoke(woohoo);
 	}
 
