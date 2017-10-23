@@ -252,6 +252,12 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		callback.invoke(stringip);
 	}
 
+	@ReactMethod
+	public void test(final Callback callback) {
+		String woohoo = 'This is a test';
+		callback.invoke(woohoo);
+	}
+
 	//This method will remove the wifi network as per the passed SSID from the device list
 	@ReactMethod
 	public void isRemoveWifiNetwork(String ssid, final Callback callback) {
