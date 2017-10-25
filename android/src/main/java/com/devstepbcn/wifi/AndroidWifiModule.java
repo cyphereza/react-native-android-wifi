@@ -297,7 +297,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 						//This method was deprecated in API level 23
 						ConnectivityManager.setProcessDefaultNetwork(network);
 					}
-					connectedAndBinded = true;
+					AndroidWifiModule.this.connectedAndBinded = true;
 					try {
 						//do a callback or something else to alert your code that it's ok to send the message through socket now
 					} catch (Exception e) {
