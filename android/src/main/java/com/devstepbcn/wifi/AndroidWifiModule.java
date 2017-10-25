@@ -256,13 +256,14 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		String stringip=longToIP(info.getIpAddress());
 		callback.invoke(stringip);
 	}
+	boolean connectedAndBinded;
 
 	@ReactMethod
 	public void findConnectAndBind(String ssid, String password, final Callback callback) {
 		// Scan for specified network
 		List < ScanResult > results = wifi.getScanResults();
 		boolean connected = false;
-		boolean connectedAndBinded = false;
+		connectedAndBinded = false;
 
 		// Iterate through all networks found
 		for (ScanResult result: results) {
