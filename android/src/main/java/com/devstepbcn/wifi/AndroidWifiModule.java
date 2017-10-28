@@ -37,6 +37,8 @@ import android.net.Network;
 import android.net.NetworkRequest;
 import android.net.NetworkCapabilities;
 
+import android.app.AlertDialog;
+
 public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 	//WifiManager Instance
@@ -99,6 +101,33 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	@ReactMethod
 	public void setEnabled(Boolean enabled) {
 		wifi.setWifiEnabled(enabled);
+	}
+
+	//Method to check if still connecting or connected
+	@ReactMethod
+	public boolean isConnecting() {
+		ConnectivityManager connManager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		
+		long waitingTime = 2000;
+		long accumulatedTime = 0;
+		long maxWaitingTime = 30000;
+
+		do {
+			// Still connecting
+			try {
+				Thread.sleep(waitingTime);
+				accumulatedTime += waitingTime;
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		} while(mWifi.isConnectedOrConnecting() == true && mWifi.isConnected() == false && accumulatedTime < maxWaitingTime);
+
+		if(maxWaitingTime >= accumulatedTime) {
+			return false;
+		} else {
+			return mWifi.isConnected();
+		}
 	}
 
 	//Send the ssid and password of a Wifi network into this to connect to the network.
@@ -256,14 +285,15 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		String stringip=longToIP(info.getIpAddress());
 		callback.invoke(stringip);
 	}
-	boolean connectedAndBinded;
 
+	final boolean[] connectedAndBinded = new boolean[1];
+	
 	@ReactMethod
 	public void findConnectAndBind(String ssid, String password, final Callback callback) {
 		// Scan for specified network
 		List < ScanResult > results = wifi.getScanResults();
 		boolean connected = false;
-		connectedAndBinded = false;
+		connectedAndBinded[0] = false;
 
 		// Iterate through all networks found
 		for (ScanResult result: results) {
@@ -298,9 +328,10 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 						//This method was deprecated in API level 23
 						ConnectivityManager.setProcessDefaultNetwork(network);
 					}
-					AndroidWifiModule.this.connectedAndBinded = true;
+					
 					try {
 						//do a callback or something else to alert your code that it's ok to send the message through socket now
+						AndroidWifiModule.this.connectedAndBinded[0] = true;
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -309,7 +340,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 			});
 		}
 		// Return value connected and binded
-		callback.invoke(connectedAndBinded);
+		callback.invoke(connectedAndBinded[0]);
 	}
 
 	//This method will remove the wifi network as per the passed SSID from the device list
