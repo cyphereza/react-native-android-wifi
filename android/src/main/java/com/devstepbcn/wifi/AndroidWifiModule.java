@@ -340,7 +340,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 			});
 		}
 		// Return value connected and binded
-		callback.invoke(connectedAndBinded[0]);
+		callback.invoke(this.connectedAndBinded[0]);
 	}
 
 	//This method will remove the wifi network as per the passed SSID from the device list
