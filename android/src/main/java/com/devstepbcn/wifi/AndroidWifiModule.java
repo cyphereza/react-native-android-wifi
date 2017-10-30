@@ -286,14 +286,11 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		callback.invoke(stringip);
 	}
 
-	final boolean[] connectedAndBinded = new boolean[1];
-	
 	@ReactMethod
 	public void findConnectAndBind(String ssid, String password, final Callback callback) {
 		// Scan for specified network
 		List < ScanResult > results = wifi.getScanResults();
 		boolean connected = false;
-		connectedAndBinded[0] = false;
 
 		// Iterate through all networks found
 		for (ScanResult result: results) {
@@ -329,18 +326,18 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 						ConnectivityManager.setProcessDefaultNetwork(network);
 					}
 					
+					// Return value connected and binded
 					try {
 						//do a callback or something else to alert your code that it's ok to send the message through socket now
-						AndroidWifiModule.this.connectedAndBinded[0] = true;
+						callback.invoke(String.valueOf(true));
 					} catch (Exception e) {
 						e.printStackTrace();
+						callback.invoke(String.valueOf(false));
 					}
 					manager.unregisterNetworkCallback(this);
 				}
 			});
 		}
-		// Return value connected and binded
-		callback.invoke(this.connectedAndBinded[0]);
 	}
 
 	//This method will remove the wifi network as per the passed SSID from the device list
