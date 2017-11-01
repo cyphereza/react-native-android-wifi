@@ -303,7 +303,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		}
 
 		// To check Android SDK version requirements met (minimum is Lollipop)
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && connected == true) {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && wifi.getConnectionInfo().getSSID().equals(ssid)) {
 			// Get system-level service by name; in this case, the connectivity service
 			final ConnectivityManager manager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
