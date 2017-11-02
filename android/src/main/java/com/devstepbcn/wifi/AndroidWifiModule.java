@@ -337,6 +337,8 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 					manager.unregisterNetworkCallback(this);
 				}
 			});
+		} else {
+			callback.invoke(String.valueOf(false));
 		}
 	}
 
