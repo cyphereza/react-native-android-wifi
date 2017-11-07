@@ -329,16 +329,16 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 					// Return value connected and binded
 					try {
 						//do a callback or something else to alert your code that it's ok to send the message through socket now
-						callback.invoke(String.valueOf(true));
+						callback.invoke(true);
 					} catch (Exception e) {
 						e.printStackTrace();
-						callback.invoke(String.valueOf(false));
+						callback.invoke(false);
 					}
 					manager.unregisterNetworkCallback(this);
 				}
 			});
 		} else {
-			callback.invoke(String.valueOf(false));
+			callback.invoke(false);
 		}
 	}
 
