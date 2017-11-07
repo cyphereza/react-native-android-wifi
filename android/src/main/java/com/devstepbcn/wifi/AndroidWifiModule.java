@@ -287,10 +287,11 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void findConnectAndBind(String ssid, String password, final Callback callback) {
+	public void findConnectAndBind(String ssid, String password, long waitingTime, long maxTimeout, final Callback callback) {
 		// Scan for specified network
 		List < ScanResult > results = wifi.getScanResults();
 		boolean connected = false;
+		boolean binded = false;
 
 		// Iterate through all networks found
 		for (ScanResult result: results) {
@@ -302,44 +303,74 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 			}
 		}
 
-		// To check Android SDK version requirements met (minimum is Lollipop)
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && wifi.getConnectionInfo().getSSID().equals(ssid)) {
-			// Get system-level service by name; in this case, the connectivity service
-			final ConnectivityManager manager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+		long timeoutCounter = 0;
 
-			NetworkRequest.Builder builder;
-			builder = new NetworkRequest.Builder();
-			
-			// Set the transport type do WIFI
-			builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+		do {
+			// To check Android SDK version requirements met (minimum is Lollipop)
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && connected) {
+				// Get system-level service by name; in this case, the connectivity service
+				final ConnectivityManager manager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-			// Request a network to satisfy a set of NetworkCapabilities
-			manager.requestNetwork(builder.build(), new ConnectivityManager.NetworkCallback() {
-				// Called when the framework connects and has declared a new network ready for use
-				@Override
-				public void onAvailable(Network network) {
-					// For Android Marshmallow 6.0 and later
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-						manager.bindProcessToNetwork(network);
-					} else {
-						//This method was deprecated in API level 23
-						ConnectivityManager.setProcessDefaultNetwork(network);
-					}
+				for (Network network : manager.getAllNetworks()) {
+					NetworkInfo ni = manager.getNetworkInfo(network);
+					String extraInfo = ni.getExtraInfo();
 					
-					// Return value connected and binded
-					try {
-						//do a callback or something else to alert your code that it's ok to send the message through socket now
-						callback.invoke(true);
-					} catch (Exception e) {
-						e.printStackTrace();
-						callback.invoke(false);
+					System.out.println("EXTRA INFO: " + extraInfo);
+
+					if (extraInfo != null) {
+						if (extraInfo.contains(ssid)) {
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+								binded = manager.bindProcessToNetwork(network);
+							} else {
+								//This method was deprecated in API level 23
+								binded = ConnectivityManager.setProcessDefaultNetwork(network);
+							}
+							break;
+						}
 					}
-					manager.unregisterNetworkCallback(this);
 				}
-			});
-		} else {
-			callback.invoke(false);
-		}
+			}
+
+			try {
+				Thread.sleep(waitingTime);
+				timeoutCounter += waitingTime;
+			} catch(Exception ex) {
+
+			}
+		}	while(binded == false && timeoutCounter <= maxTimeout);
+			
+		callback.invoke(binded);
+
+			// NetworkRequest.Builder builder;
+			// builder = new NetworkRequest.Builder();
+			
+			// // Set the transport type do WIFI
+			// builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+
+			// // Request a network to satisfy a set of NetworkCapabilities
+			// manager.requestNetwork(builder.build(), new ConnectivityManager.NetworkCallback() {
+			// 	// Called when the framework connects and has declared a new network ready for use
+			// 	@Override
+			// 	public void onAvailable(Network network) {
+			// 		// For Android Marshmallow 6.0 and later
+			// 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			// 			manager.bindProcessToNetwork(network);
+			// 		} else {
+			// 			//This method was deprecated in API level 23
+			// 			ConnectivityManager.setProcessDefaultNetwork(network);
+			// 		}
+					
+			// 		// Return value connected and binded
+			// 		try {
+			// 			//do a callback or something else to alert your code that it's ok to send the message through socket now
+			// 			callback.invoke(true);
+			// 		} catch (Exception e) {
+			// 			e.printStackTrace();
+			// 			callback.invoke(false);
+			// 		}
+			// 		manager.unregisterNetworkCallback(this);
+			// 	}
+			// });
 	}
 
 	//This method will remove the wifi network as per the passed SSID from the device list
