@@ -287,11 +287,13 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void findConnectAndBind(String ssid, String password, long waitingTime, long maxTimeout, final Callback callback) {
+	public void findConnectAndBind(String ssid, String password, int waitingTimeInt, int maxTimeoutInt, final Callback callback) {
 		// Scan for specified network
 		List < ScanResult > results = wifi.getScanResults();
 		boolean connected = false;
 		boolean binded = false;
+		long waitingTime = waitingTimeInt;
+		long maxTimeout = maxTimeoutInt;
 
 		// Iterate through all networks found
 		for (ScanResult result: results) {
