@@ -303,7 +303,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 			}
 		}
 
-		long timeoutCounter = 0;
+		long timeoutCounter = 0l;
 
 		do {
 			// To check Android SDK version requirements met (minimum is Lollipop)
