@@ -315,7 +315,10 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 
 				for (Network network : manager.getAllNetworks()) {
 					NetworkInfo ni = manager.getNetworkInfo(network);
-					String extraInfo = ni.getExtraInfo();
+					String extraInfo = "";
+					if (ni.getExtraInfo() != null) {
+						extraInfo = ni.getExtraInfo();
+					}
 					
 					System.out.println("EXTRA INFO: " + extraInfo);
 
