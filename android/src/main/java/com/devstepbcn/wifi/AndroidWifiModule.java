@@ -320,7 +320,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 						extraInfo = ni.getExtraInfo();
 					}
 					
-					System.out.println("EXTRA INFO: " + extraInfo);
+					// System.out.println("EXTRA INFO: " + extraInfo);
 
 					if (extraInfo != null) {
 						if (extraInfo.contains(ssid)) {
