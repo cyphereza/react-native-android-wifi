@@ -328,7 +328,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 								binded = manager.bindProcessToNetwork(network);
 							} else {
 								//This method was deprecated in API level 23
-								binded = ConnectivityManager.setProcessDefaultNetwork(network);
+								binded = manager.setProcessDefaultNetwork(network);
 							}
 							break;
 						}
