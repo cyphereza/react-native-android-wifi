@@ -292,12 +292,12 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void bindToNetwork(final Callback status) {
+	public void bindToNetwork(String ssid, final Callback status) {
 		boolean binded = false;
 
 		try {
 			// To check Android SDK version requirements met (minimum is Lollipop)
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && connected) {
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 				// Get system-level service by name; in this case, the connectivity service
 				final ConnectivityManager manager = (ConnectivityManager) getReactApplicationContext()
 						.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -325,7 +325,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 				}
 			}
 		} catch (Exception ex) {
-			console.log("Error binding: " + ex);
+			System.out.println("Error binding: " + ex);
 		}
 
 		status.invoke(binded);
