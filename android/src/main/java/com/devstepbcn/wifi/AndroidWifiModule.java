@@ -425,6 +425,28 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		// });
 	}
 
+	@ReactMethod
+	public void hasWallGarden(final Callback callback) {
+		ConnectivityManager connectivityManager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+		Network[] activeNetworks = connectivityManager.getAllNetworks();
+		for(Network network:activeNetworks){
+				Log.d("WIFIUNIFI-network", network.toString());
+				
+				if(connectivityManager.getNetworkInfo(network).getType() == ConnectivityManager.TYPE_WIFI){
+						NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
+
+						Log.d("WIFIUNIFI-networkcapabilities", networkCapabilities.toString());
+						if(networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)){
+							//DO SOMETHING
+							callback.invoke(true);
+						} else {
+							callback.invoke(false);
+						}
+						break;
+				}
+		}
+	}
+
 	//This method will remove the wifi network as per the passed SSID from the device list
 	@ReactMethod
 	public void isRemoveWifiNetwork(String ssid, final Callback callback) {
