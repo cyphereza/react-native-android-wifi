@@ -464,7 +464,6 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 				break;
 			}
 		}
-		statusCallback.invoke(false);
 	}
 
 	//This method will remove the wifi network as per the passed SSID from the device list
