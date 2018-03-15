@@ -431,7 +431,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 		Network[] activeNetworks = connectivityManager.getAllNetworks();
 		for(Network network:activeNetworks){
 				Log.d("WIFIUNIFI-network", network.toString());
-				
+
 				if(connectivityManager.getNetworkInfo(network).getType() == ConnectivityManager.TYPE_WIFI){
 						NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
 
@@ -445,6 +445,26 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 						break;
 				}
 		}
+	}
+
+	@ReactMethod
+	public void connectToWifi(String networkSSID, String password, final Callback statusCallback) {
+		WifiConfiguration wc = new WifiConfiguration();
+		wc.SSID = "\"" + networkSSID + "\"";
+		wc.preSharedKey = "\"" + password + "\"";
+		wifi.addNetwork(wc);
+
+		List<WifiConfiguration> list = wifi.getConfiguredNetworks();
+		for( WifiConfiguration i : list ) {
+			if(i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
+				wifi.disconnect();
+				wifi.enableNetwork(i.networkId, true);
+				wifi.reconnect();
+				statusCallback.invoke(true);
+				break;
+			}
+		}
+		statusCallback.invoke(false);
 	}
 
 	//This method will remove the wifi network as per the passed SSID from the device list
