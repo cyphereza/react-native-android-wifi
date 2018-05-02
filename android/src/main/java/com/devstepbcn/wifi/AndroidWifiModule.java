@@ -430,6 +430,7 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 	public void hasWallGarden(final Callback callback) {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getReactApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		Network[] activeNetworks = connectivityManager.getAllNetworks();
+		boolean invokeReturn = false;
 		for(Network network:activeNetworks){
 				Log.d("WIFIUNIFI-network", network.toString());
 
@@ -439,13 +440,12 @@ public class AndroidWifiModule extends ReactContextBaseJavaModule {
 						Log.d("WIFIUNIFI-networkcapabilities", networkCapabilities.toString());
 						if(networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)){
 							//DO SOMETHING
-							callback.invoke(true);
-						} else {
-							callback.invoke(false);
+							invokeReturn = true;
 						}
 						break;
 				}
 		}
+		callback.invoke(invokeReturn);
 	}
 
 	@ReactMethod
